@@ -7,7 +7,7 @@ Authors: Joel Burton, Christian Fernandez, Meggie Mahnken.
 """
 
 
-from flask import Flask, render_template, redirect, flash
+from flask import Flask, render_template, redirect, flash, session
 import jinja2
 
 import model
@@ -73,11 +73,15 @@ def add_to_cart(id):
     When a melon is added to the cart, redirect browser to the shopping cart
     page and display a confirmation message: 'Successfully added to cart'.
     """
-
+    test_melon = "Crab Melon"
+    test_qty = 50
+    test_price = 7000
+    total = int(test_qty) * int(test_price)
     # TODO: Finish shopping cart functionality
     #   - use session variables to hold cart list
 
-    return "Oops! This needs to be implemented!"
+    flash("Melon added to cart successfully!")
+    return render_template("cart.html", melon_name=test_melon, melon_qty=test_qty, melon_price=test_price, melon_total=total)
 
 
 @app.route("/login", methods=["GET"])
