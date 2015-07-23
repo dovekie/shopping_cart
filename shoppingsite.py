@@ -73,13 +73,17 @@ def add_to_cart(id):
     When a melon is added to the cart, redirect browser to the shopping cart
     page and display a confirmation message: 'Successfully added to cart'.
     """
+    
 
     melon = model.Melon.get_by_id(id)
     
     qty = 2
     total = melon.price * qty
     total = "$%.2f" % total
-    order = (melon, qty, total)
+    common_name = melon.common_name
+    price = melon.price_str()
+    order = (common_name, qty, price, total)
+    
 
     session['cart'].append(order)
 
@@ -111,14 +115,12 @@ def process_login():
     password = request.form.get("password")
     session["login"] = (email, password)
 
-    session["cart"] = []  # this part breaks everything. fix it. :(
+    session["cart"] = []
 
     print "email is %s and password is %s" %(email, password)
-    print "session email is %s and session password is %s" %(session["email"], session["password"])
+    print "session email is %s and session password is %s" %(session["login"][0], session["login"][1])
 
-    # TODO: Need to implement this!
-
-    return "Oops! This needs to be implemented"
+    return redirect("/melons")
 
 
 @app.route("/checkout")

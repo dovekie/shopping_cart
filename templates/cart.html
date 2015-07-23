@@ -15,10 +15,10 @@
     <tbody>
         {% for order in cart %}
         <tr>
-            <td>{{ order[0].common_name }}</td>
+            <td>{{ order[0] }}</td>
             <td>{{ order[1] }}</td>
-            <td>{{ order[0].price_str()}}</td>
             <td>{{ order[2] }}</td>
+            <td>{{ order[3] }}</td>
         </tr>
         {% endfor %}
     </tbody>
