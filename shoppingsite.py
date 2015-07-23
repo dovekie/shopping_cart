@@ -73,15 +73,18 @@ def add_to_cart(id):
     When a melon is added to the cart, redirect browser to the shopping cart
     page and display a confirmation message: 'Successfully added to cart'.
     """
-    test_melon = "Crab Melon"
-    test_qty = 50
-    test_price = 7000
-    total = int(test_qty) * int(test_price)
+
+    melon = model.Melon.get_by_id(id)
+    qty = 2
+    total = melon.price * qty
+    total = "$%.2f" % total
     # TODO: Finish shopping cart functionality
     #   - use session variables to hold cart list
 
     flash("Melon added to cart successfully!")
-    return render_template("cart.html", melon_name=test_melon, melon_qty=test_qty, melon_price=test_price, melon_total=total)
+    return render_template("cart.html", 
+                            cart_melon=melon, total=total, quantity=qty)
+    # return render_template("cart.html", melon_name=test_melon, melon_qty=test_qty, melon_price=test_price, melon_total=total)
 
 
 @app.route("/login", methods=["GET"])
