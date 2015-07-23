@@ -7,7 +7,7 @@ Authors: Joel Burton, Christian Fernandez, Meggie Mahnken.
 """
 
 
-from flask import Flask, render_template, redirect, flash, session
+from flask import Flask, render_template, redirect, flash, session, request
 import jinja2
 
 import model
@@ -75,15 +75,21 @@ def add_to_cart(id):
     """
 
     melon = model.Melon.get_by_id(id)
+    
     qty = 2
     total = melon.price * qty
     total = "$%.2f" % total
+    order = (melon, qty, total)
+
+    session['cart'].append(order)
+
+
     # TODO: Finish shopping cart functionality
     #   - use session variables to hold cart list
 
     flash("Melon added to cart successfully!")
     return render_template("cart.html", 
-                            cart_melon=melon, total=total, quantity=qty)
+                            cart=session['cart'])
     # return render_template("cart.html", melon_name=test_melon, melon_qty=test_qty, melon_price=test_price, melon_total=total)
 
 
@@ -101,6 +107,14 @@ def process_login():
     Find the user's login credentials located in the 'request.form'
     dictionary, look up the user, and store them in the session.
     """
+    email = request.form.get("email")
+    password = request.form.get("password")
+    session["login"] = (email, password)
+
+    session["cart"] = []  # this part breaks everything. fix it. :(
+
+    print "email is %s and password is %s" %(email, password)
+    print "session email is %s and session password is %s" %(session["email"], session["password"])
 
     # TODO: Need to implement this!
 
