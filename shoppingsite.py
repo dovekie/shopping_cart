@@ -31,6 +31,10 @@ app.jinja_env.undefined = jinja2.StrictUndefined
 def index():
     """Return homepage."""
 
+    if "cart" in session.keys():
+        pass
+    else:
+        session["cart"] = []
     return render_template("homepage.html")
 
 
@@ -63,7 +67,8 @@ def shopping_cart():
     # TODO: Display the contents of the shopping cart.
     #   - The cart is a list in session containing melons added
 
-    return render_template("cart.html")
+    return render_template("cart.html", 
+                            cart=session['cart'])
 
 
 @app.route("/add_to_cart/<int:id>")
@@ -76,16 +81,30 @@ def add_to_cart(id):
     
 
     melon = model.Melon.get_by_id(id)
-    
-    qty = 2
+    qty = int(request.args.get('qty'))
     total = melon.price * qty
     total = "$%.2f" % total
     common_name = melon.common_name
     price = melon.price_str()
-    order = (common_name, qty, price, total)
     
+    print "OMG MELON", melon
 
-    session['cart'].append(order)
+    if len(session['cart']) > 0:
+        for old_order in session['cart']:
+            print "the for loop ran"
+            if old_order[0] == common_name:
+                print "the if ran"
+                old_order[1] += qty
+            else:
+                print "the else in the for loop ran"
+                order = [common_name, qty, price, total]
+                session['cart'].append(order)
+    else:
+        print "the else outside ran"
+        order = [common_name, qty, price, total]
+        session['cart'].append(order)
+
+
 
 
     # TODO: Finish shopping cart functionality
@@ -113,15 +132,34 @@ def process_login():
     """
     email = request.form.get("email")
     password = request.form.get("password")
-    session["login"] = (email, password)
+    
+    authenticated = model.Customer.authenticate(email, password)
+    
 
-    session["cart"] = []
+    if authenticated:
+        name = model.Customer.get_by_email(email)
+        session["first_name"] = name
+        session["login"] = (email, password)
 
-    print "email is %s and password is %s" %(email, password)
-    print "session email is %s and session password is %s" %(session["login"][0], session["login"][1])
 
-    return redirect("/melons")
+        print "email is %s and password is %s" %(email, password)
+        print "session email is %s and session password is %s" %(session["login"][0], session["login"][1])
+        return redirect("/melons")
 
+    else:
+        flash("Sorry! Your information was not found in our system.")
+        return redirect("/login")
+        
+    
+
+@app.route("/logout")
+def logout():
+    """strips all session variables and returns the login page"""
+
+    for key in session.keys():
+        del session[key]
+
+    return redirect("/login")
 
 @app.route("/checkout")
 def checkout():

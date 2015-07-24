@@ -113,10 +113,40 @@ class Customer(object):
 
     @classmethod
     def get_by_email(cls, email):
-        """Query for a specific melon in the database by the primary key"""
+        """Return first name in the database by email"""
 
-        # TODO: Need to implement this.
+        cursor = db_connect()
+        QUERY = """
+                  SELECT first_name
+                   FROM Customers
+                   WHERE email = ?;
+               """
 
+        cursor.execute(QUERY, (email,))
+
+        user = cursor.fetchone()
+        name = user[0]
+
+        return name
+
+    @classmethod
+    def authenticate(cls, email, password):
+        """Given an email and password, confirms that the user is in the database"""
+        cursor = db_connect()
+        QUERY = """
+                  SELECT *
+                   FROM Customers
+                   WHERE email = ? AND password = ?;
+               """
+
+        cursor.execute(QUERY, (email, password))
+
+        if cursor.fetchone():
+            authenticated = True
+        else:
+            authenticated = False
+
+        return authenticated       
 
 def db_connect():
     """Return a database cursor."""
